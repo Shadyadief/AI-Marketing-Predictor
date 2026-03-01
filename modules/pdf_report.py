@@ -9,126 +9,165 @@ from datetime import datetime
 
 def generate_pdf(df, client_name, lang="en"):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            topMargin=0.6*inch, bottomMargin=0.6*inch)
     story = []
     styles = getSampleStyleSheet()
 
-    # Colors
-    PRIMARY = colors.HexColor('#00D4FF')
-    DARK = colors.HexColor('#0A0A0A')
-    PURPLE = colors.HexColor('#7B2FBE')
+    # ── Colors (matching logo) ──
+    PINK     = colors.HexColor('#E91E8C')
+    ORANGE   = colors.HexColor('#FF6B35')
+    PURPLE   = colors.HexColor('#9C27B0')
+    DARK_BG  = colors.HexColor('#12062A')
+    LIGHT_ROW = colors.HexColor('#FDF0F8')
 
-    # Title Style
+    # ── Title Style ──
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Title'],
-        fontSize=24,
-        textColor=PRIMARY,
+        fontSize=26,
+        textColor=PINK,
         alignment=TA_CENTER,
-        spaceAfter=10
+        spaceAfter=6,
+        fontName='Helvetica-Bold'
     )
 
     subtitle_style = ParagraphStyle(
         'Subtitle',
         parent=styles['Normal'],
-        fontSize=12,
-        textColor=colors.grey,
+        fontSize=10,
+        textColor=colors.HexColor('#9988BB'),
         alignment=TA_CENTER,
-        spaceAfter=20
+        spaceAfter=16
     )
 
-    # Header
-    story.append(Paragraph("3M4Media", title_style))
-    story.append(Paragraph("Smart Marketing Solutions | Promote Your Dreams ⭐", subtitle_style))
+    section_style = ParagraphStyle(
+        'SectionTitle',
+        parent=styles['Heading1'],
+        fontSize=14,
+        textColor=PURPLE,
+        spaceAfter=10,
+        fontName='Helvetica-Bold'
+    )
+
+    # ── Header ──
+    story.append(Paragraph("AI-Marketing-Predictor", title_style))
+    story.append(Paragraph(
+        "AI-Powered Marketing Intelligence | Built by ENG. Shadya Dief",
+        subtitle_style
+    ))
+
+    # ── Divider line ──
+    divider_data = [[''] ]
+    divider = Table(divider_data, colWidths=[6.5*inch])
+    divider.setStyle(TableStyle([
+        ('LINEBELOW', (0, 0), (-1, -1), 2, PINK),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    story.append(divider)
     story.append(Spacer(1, 0.2*inch))
 
-    # Report Title
-    report_title = ParagraphStyle(
-        'ReportTitle',
-        parent=styles['Heading1'],
-        fontSize=16,
-        textColor=PURPLE,
-        spaceAfter=10
-    )
-
+    # ── Report Title ──
     title_text = f"Campaign Performance Report — {client_name}" if lang == "en" \
         else f"تقرير أداء الحملات — {client_name}"
-    story.append(Paragraph(title_text, report_title))
+    story.append(Paragraph(title_text, section_style))
 
     date_text = f"Generated: {datetime.now().strftime('%B %d, %Y')}"
     story.append(Paragraph(date_text, subtitle_style))
-    story.append(Spacer(1, 0.3*inch))
+    story.append(Spacer(1, 0.25*inch))
 
-    # KPIs Table
+    # ── KPIs Table ──
     kpi_title = "Key Performance Indicators" if lang == "en" else "مؤشرات الأداء الرئيسية"
-    story.append(Paragraph(kpi_title, report_title))
+    story.append(Paragraph(kpi_title, section_style))
     story.append(Spacer(1, 0.1*inch))
 
     kpi_data = [
         ["Metric", "Value"],
-        ["Total Clicks", f"{df['Clicks'].sum():,}"],
-        ["Total Impressions", f"{df['Impressions'].sum():,}"],
-        ["Average ROI", f"{df['ROI'].mean():.2f}x"],
-        ["Average CTR", f"{df['CTR'].mean():.2f}%"],
-        ["Avg Acquisition Cost", f"${df['Acquisition_Cost'].mean():,.2f}"],
-        ["Avg Conversion Rate", f"{df['Conversion_Rate'].mean():.2%}"],
+        ["Total Clicks",          f"{df['Clicks'].sum():,}"],
+        ["Total Impressions",     f"{df['Impressions'].sum():,}"],
+        ["Average ROI",           f"{df['ROI'].mean():.2f}x"],
+        ["Average CTR",           f"{df['CTR'].mean():.2f}%"],
+        ["Avg Acquisition Cost",  f"${df['Acquisition_Cost'].mean():,.2f}"],
+        ["Avg Conversion Rate",   f"{df['Conversion_Rate'].mean():.2%}"],
     ]
 
-    table = Table(kpi_data, colWidths=[3*inch, 3*inch])
+    table = Table(kpi_data, colWidths=[3.25*inch, 3.25*inch])
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), PRIMARY),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F0F8FF')]),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        # Header row
+        ('BACKGROUND',    (0, 0), (-1, 0),  PINK),
+        ('TEXTCOLOR',     (0, 0), (-1, 0),  colors.white),
+        ('FONTNAME',      (0, 0), (-1, 0),  'Helvetica-Bold'),
+        ('FONTSIZE',      (0, 0), (-1, 0),  12),
+        # Data rows
+        ('ROWBACKGROUNDS',(0, 1), (-1, -1), [colors.white, LIGHT_ROW]),
+        ('FONTSIZE',      (0, 1), (-1, -1), 10),
+        ('TEXTCOLOR',     (0, 1), (-1, -1), colors.HexColor('#1A0A2E')),
+        # All cells
+        ('ALIGN',         (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING',    (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 9),
+        ('GRID',          (0, 0), (-1, -1), 0.5, colors.HexColor('#E0C0D8')),
+        ('ROUNDEDCORNERS',[4]),
     ]))
     story.append(table)
     story.append(Spacer(1, 0.3*inch))
 
-    # Best Platform
+    # ── AI Recommendations ──
     best_platform = df.groupby('Channel_Used')['ROI'].mean().idxmax()
-    best_roi = df.groupby('Channel_Used')['ROI'].mean().max()
+    best_roi      = df.groupby('Channel_Used')['ROI'].mean().max()
+    best_goal     = df.groupby('Campaign_Goal')['ROI'].mean().idxmax()
+    best_segment  = df.groupby('Customer_Segment')['Conversion_Rate'].mean().idxmax()
+    best_month    = df.groupby('Month')['ROI'].mean().idxmax()
 
     platform_title = "AI Recommendations" if lang == "en" else "توصيات الذكاء الاصطناعي"
-    story.append(Paragraph(platform_title, report_title))
+    story.append(Paragraph(platform_title, section_style))
     story.append(Spacer(1, 0.1*inch))
 
     rec_style = ParagraphStyle(
         'Rec', parent=styles['Normal'],
-        fontSize=11, spaceAfter=8, leftIndent=20
+        fontSize=11, spaceAfter=10, leftIndent=16,
+        textColor=colors.HexColor('#1A0A2E')
     )
-
-    best_goal = df.groupby('Campaign_Goal')['ROI'].mean().idxmax()
-    best_segment = df.groupby('Customer_Segment')['Conversion_Rate'].mean().idxmax()
-    best_month = df.groupby('Month')['ROI'].mean().idxmax()
 
     recommendations = [
-        f"✅ Best Platform: {best_platform} (ROI: {best_roi:.2f}x)",
-        f"🎯 Best Campaign Goal: {best_goal}",
-        f"👥 Best Customer Segment: {best_segment}",
-        f"📅 Best Month for Campaigns: Month {best_month}",
-        f"📈 Next Month ROI Prediction: {df['ROI'].mean() * 1.05:.2f}x (+5% expected growth)",
+        (PINK,   f"🏆  Best Platform: {best_platform}  (ROI: {best_roi:.2f}x)"),
+        (ORANGE, f"🎯  Best Campaign Goal: {best_goal}"),
+        (PURPLE, f"👥  Best Customer Segment: {best_segment}"),
+        (PINK,   f"📅  Best Month for Campaigns: Month {best_month}"),
+        (ORANGE, f"📈  Next Month ROI Prediction: {df['ROI'].mean() * 1.05:.2f}x  (+5% expected growth)"),
     ]
 
-    for rec in recommendations:
-        story.append(Paragraph(rec, rec_style))
+    # Recommendations as colored table
+    rec_table_data = [[Paragraph(
+        f'<font color="#{c.hexval()[1:]}">●</font>  {text}',
+        rec_style
+    )] for c, text in recommendations]
 
-    story.append(Spacer(1, 0.5*inch))
+    rec_table = Table(rec_table_data, colWidths=[6.5*inch])
+    rec_table.setStyle(TableStyle([
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, LIGHT_ROW]),
+        ('TOPPADDING',    (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 12),
+        ('GRID',          (0, 0), (-1, -1), 0.3, colors.HexColor('#E0C0D8')),
+    ]))
+    story.append(rec_table)
+    story.append(Spacer(1, 0.4*inch))
 
-    # Footer
+    # ── Footer ──
+    story.append(divider)
+    story.append(Spacer(1, 0.1*inch))
+
     footer_style = ParagraphStyle(
         'Footer', parent=styles['Normal'],
-        fontSize=9, textColor=colors.grey,
+        fontSize=9, textColor=colors.HexColor('#9988BB'),
         alignment=TA_CENTER
     )
-    story.append(Paragraph("━" * 60, footer_style))
     story.append(Paragraph(
-        "3M4Media | Smart Marketing Solutions | www.3m4media.com",
+        "AI-Marketing-Predictor  |  Built by <b>ENG. Shadya Dief</b>  |  "
+        "linkedin.com/in/shadya-dief-ml  |  github.com/Shadyadief",
         footer_style
     ))
 

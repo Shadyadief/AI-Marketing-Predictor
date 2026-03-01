@@ -10,21 +10,28 @@ def show_client_view(df, lang="en", theme="dark"):
     # ── Theme Settings ──
     template   = "plotly_dark"   if theme == "dark" else "plotly_white"
     bg_color   = "rgba(0,0,0,0)" if theme == "dark" else "rgba(255,255,255,0.6)"
-    accent     = "#00B4B4"       if theme == "dark" else "#006B6B"
-    text_color = "#FFFFFF"       if theme == "dark" else "#0A1628"
-    subtext    = "#8899AA"       if theme == "dark" else "#4A6080"
-    card_bg    = "rgba(0,180,180,0.06)" if theme == "dark" else "rgba(0,120,120,0.05)"
-    border     = "rgba(0,180,180,0.2)"  if theme == "dark" else "rgba(0,120,120,0.2)"
+    accent     = "#E91E8C"       if theme == "dark" else "#C2185B"
+    accent2    = "#FF6B35"       if theme == "dark" else "#E64A19"
+    accent3    = "#9C27B0"       if theme == "dark" else "#7B1FA2"
+    text_color = "#FFFFFF"       if theme == "dark" else "#1A0A2E"
+    subtext    = "#9988BB"       if theme == "dark" else "#6A4080"
+    card_bg    = "rgba(233,30,140,0.06)"  if theme == "dark" else "rgba(194,24,91,0.05)"
+    border     = "rgba(233,30,140,0.2)"   if theme == "dark" else "rgba(194,24,91,0.2)"
+
+    CHART_COLORS = ['#E91E8C', '#FF6B35', '#9C27B0', '#FF9800']
 
     t = lambda key: get_text(key, lang)
 
     # ── Page Banner ──
     st.markdown(f"""
-    <div style='background:{card_bg}; border:1px solid {border};
+    <div style='background:linear-gradient(135deg, rgba(233,30,140,0.08), rgba(156,39,176,0.06));
+                border:1px solid {border};
                 border-radius:16px; padding:22px 28px; margin-bottom:24px;
                 backdrop-filter:blur(12px);'>
         <h1 style='font-family:Syne,sans-serif; font-size:1.8rem; font-weight:800;
-                   color:{text_color}; margin:0;'>
+                   background:linear-gradient(135deg, {accent2}, {accent}, {accent3});
+                   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                   background-clip:text; margin:0;'>
             👤 {t("client_view")}
         </h1>
         <p style='color:{accent}; font-size:0.78rem; letter-spacing:2px;
@@ -95,15 +102,12 @@ def show_client_view(df, lang="en", theme="dark"):
         fig1 = px.bar(
             platform, x='Channel_Used', y='ROI',
             color='Channel_Used',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             text='ROI',
             hover_data=['Clicks','Campaigns']
         )
-        fig1.update_traces(
-            texttemplate='%{text:.2f}x',
-            textposition='outside'
-        )
+        fig1.update_traces(texttemplate='%{text:.2f}x', textposition='outside')
         fig1.update_layout(
             plot_bgcolor=bg_color,
             paper_bgcolor=bg_color,
@@ -120,7 +124,7 @@ def show_client_view(df, lang="en", theme="dark"):
 
         fig2 = px.pie(
             goal, values='ROI', names='Campaign_Goal',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             hole=0.45
         )
@@ -148,11 +152,11 @@ def show_client_view(df, lang="en", theme="dark"):
             x=monthly['Month'], y=monthly['ROI'],
             mode='lines+markers',
             name='ROI',
-            line=dict(color='#00B4B4', width=3),
-            marker=dict(size=8, color='#00B4B4',
+            line=dict(color=accent, width=3),
+            marker=dict(size=8, color=accent,
                        line=dict(width=2, color='white')),
             fill='tozeroy',
-            fillcolor='rgba(0,180,180,0.08)'
+            fillcolor='rgba(233,30,140,0.08)'
         ))
         fig3.update_layout(
             template=template,
@@ -174,14 +178,11 @@ def show_client_view(df, lang="en", theme="dark"):
         fig4 = px.bar(
             conv, x='Channel_Used', y='Conversion_Rate',
             color='Channel_Used',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             text='Conversion_Rate'
         )
-        fig4.update_traces(
-            texttemplate='%{text:.2f}%',
-            textposition='outside'
-        )
+        fig4.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
         fig4.update_layout(
             plot_bgcolor=bg_color,
             paper_bgcolor=bg_color,
@@ -191,58 +192,35 @@ def show_client_view(df, lang="en", theme="dark"):
         )
         st.plotly_chart(fig4, use_container_width=True)
 
-    # ── Best Month ──
+    # ── Best Cards ──
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-    best_month     = client_df.groupby('Month')['ROI'].mean().idxmax()
-    best_platform  = client_df.groupby('Channel_Used')['ROI'].mean().idxmax()
-    best_goal      = client_df.groupby('Campaign_Goal')['ROI'].mean().idxmax()
-    best_segment   = client_df.groupby('Customer_Segment')['Conversion_Rate'].mean().idxmax()
+    best_month    = client_df.groupby('Month')['ROI'].mean().idxmax()
+    best_platform = client_df.groupby('Channel_Used')['ROI'].mean().idxmax()
+    best_goal     = client_df.groupby('Campaign_Goal')['ROI'].mean().idxmax()
+    best_segment  = client_df.groupby('Customer_Segment')['Conversion_Rate'].mean().idxmax()
 
     col_a, col_b, col_c, col_d = st.columns(4)
-    with col_a:
-        st.markdown(f"""
-        <div style='background:{card_bg}; border:1px solid {border};
-                    border-radius:12px; padding:16px; text-align:center;'>
-            <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
-                      letter-spacing:1.5px; margin:0 0 6px 0;'>Best Platform</p>
-            <p style='color:{accent}; font-size:1.1rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0;'>📱 {best_platform}</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_b:
-        st.markdown(f"""
-        <div style='background:{card_bg}; border:1px solid {border};
-                    border-radius:12px; padding:16px; text-align:center;'>
-            <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
-                      letter-spacing:1.5px; margin:0 0 6px 0;'>Best Goal</p>
-            <p style='color:{accent}; font-size:1.1rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0;'>🎯 {best_goal}</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_c:
-        st.markdown(f"""
-        <div style='background:{card_bg}; border:1px solid {border};
-                    border-radius:12px; padding:16px; text-align:center;'>
-            <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
-                      letter-spacing:1.5px; margin:0 0 6px 0;'>Best Month</p>
-            <p style='color:{accent}; font-size:1.1rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0;'>📅 Month {best_month}</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_d:
-        st.markdown(f"""
-        <div style='background:{card_bg}; border:1px solid {border};
-                    border-radius:12px; padding:16px; text-align:center;'>
-            <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
-                      letter-spacing:1.5px; margin:0 0 6px 0;'>Best Segment</p>
-            <p style='color:{accent}; font-size:1.1rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0;'>👥 {best_segment}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    for col, icon, label, value, color in [
+        (col_a, "📱", "Best Platform", best_platform,      accent),
+        (col_b, "🎯", "Best Goal",     best_goal,          accent2),
+        (col_c, "📅", "Best Month",    f"Month {best_month}", accent3),
+        (col_d, "👥", "Best Segment",  best_segment,       accent),
+    ]:
+        with col:
+            st.markdown(f"""
+            <div style='background:{card_bg}; border:1px solid {border};
+                        border-top:3px solid {color};
+                        border-radius:12px; padding:16px; text-align:center;'>
+                <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
+                          letter-spacing:1.5px; margin:0 0 6px 0;'>{label}</p>
+                <p style='color:{color}; font-size:1.0rem; font-weight:800;
+                          font-family:Syne,sans-serif; margin:0;'>{icon} {value}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
     # ── PDF Report ──
     st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-    st.markdown(f"<hr style='border-color:rgba(0,180,180,0.2);'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border-color:{border};'>", unsafe_allow_html=True)
 
     col_btn, col_info = st.columns([1, 3])
     with col_btn:
@@ -252,7 +230,7 @@ def show_client_view(df, lang="en", theme="dark"):
             st.download_button(
                 label="⬇️ Download PDF",
                 data=pdf_bytes,
-                file_name=f"{selected}_3M4Media_Report.pdf",
+                file_name=f"{selected}_AI-Marketing-Predictor_Report.pdf",
                 mime="application/pdf",
                 use_container_width=True
             )

@@ -4,23 +4,33 @@ import pandas as pd
 from modules.translator import get_text
 
 def show_overview(df, lang="en", theme="dark"):
-    
+
     # Theme settings
-    template   = "plotly_dark"  if theme == "dark" else "plotly_white"
+    template   = "plotly_dark"   if theme == "dark" else "plotly_white"
     bg_color   = "rgba(0,0,0,0)" if theme == "dark" else "rgba(255,255,255,0.6)"
-    accent     = "#00B4B4"       if theme == "dark" else "#006B6B"
-    text_color = "#FFFFFF"       if theme == "dark" else "#0A1628"
+    accent     = "#E91E8C"       if theme == "dark" else "#C2185B"
+    accent2    = "#FF6B35"       if theme == "dark" else "#E64A19"
+    accent3    = "#9C27B0"       if theme == "dark" else "#7B1FA2"
+    text_color = "#FFFFFF"       if theme == "dark" else "#1A0A2E"
+    subtext    = "#9988BB"       if theme == "dark" else "#6A4080"
+    card_bg    = "rgba(233,30,140,0.06)"  if theme == "dark" else "rgba(194,24,91,0.05)"
+    border     = "rgba(233,30,140,0.2)"   if theme == "dark" else "rgba(194,24,91,0.2)"
+
+    # Chart colors matching logo gradient
+    CHART_COLORS = ['#E91E8C', '#FF6B35', '#9C27B0', '#FF9800']
 
     t = lambda key: get_text(key, lang)
 
     # ── Page Banner ──
     st.markdown(f"""
-    <div style='background:{"rgba(0,180,180,0.08)" if theme=="dark" else "rgba(0,120,120,0.06)"};
-                border:1px solid {"rgba(0,180,180,0.2)" if theme=="dark" else "rgba(0,120,120,0.2)"};
+    <div style='background:linear-gradient(135deg, rgba(233,30,140,0.08), rgba(156,39,176,0.06));
+                border:1px solid {border};
                 border-radius:16px; padding:22px 28px; margin-bottom:24px;
                 backdrop-filter:blur(12px);'>
         <h1 style='font-family:Syne,sans-serif; font-size:1.8rem; font-weight:800;
-                   color:{text_color}; margin:0;'>
+                   background:linear-gradient(135deg, {accent2}, {accent}, {accent3});
+                   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                   background-clip:text; margin:0;'>
             📊 {t("dashboard_title")}
         </h1>
         <p style='color:{accent}; font-size:0.78rem; letter-spacing:2px;
@@ -56,7 +66,7 @@ def show_overview(df, lang="en", theme="dark"):
         fig = px.bar(
             platform_data, x='Channel_Used', y='ROI',
             color='Channel_Used',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             text='ROI'
         )
@@ -76,7 +86,7 @@ def show_overview(df, lang="en", theme="dark"):
 
         fig2 = px.pie(
             goal_data, values='ROI', names='Campaign_Goal',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             hole=0.4
         )
@@ -100,13 +110,15 @@ def show_overview(df, lang="en", theme="dark"):
         fig3 = px.line(
             monthly, x='Month', y='ROI',
             markers=True,
-            color_discrete_sequence=['#00B4B4'],
+            color_discrete_sequence=[accent],
             template=template
         )
         fig3.update_traces(
             line=dict(width=3),
-            marker=dict(size=8, color='#00B4B4',
-                       line=dict(width=2, color='white'))
+            marker=dict(size=8, color=accent,
+                       line=dict(width=2, color='white')),
+            fill='tozeroy',
+            fillcolor='rgba(233,30,140,0.08)'
         )
         fig3.update_layout(
             plot_bgcolor=bg_color,
@@ -125,7 +137,7 @@ def show_overview(df, lang="en", theme="dark"):
             top_clients, x='ROI', y='Company',
             orientation='h',
             color='ROI',
-            color_continuous_scale=['#003333','#00B4B4'],
+            color_continuous_scale=['#2D0A1E', '#E91E8C'],
             template=template
         )
         fig4.update_layout(

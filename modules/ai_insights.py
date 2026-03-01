@@ -12,22 +12,29 @@ def show_ai_insights(df, lang="en", theme="dark"):
     # ── Theme Settings ──
     template   = "plotly_dark"   if theme == "dark" else "plotly_white"
     bg_color   = "rgba(0,0,0,0)" if theme == "dark" else "rgba(255,255,255,0.6)"
-    accent     = "#00B4B4"       if theme == "dark" else "#006B6B"
-    text_color = "#FFFFFF"       if theme == "dark" else "#0A1628"
-    subtext    = "#8899AA"       if theme == "dark" else "#4A6080"
-    card_bg    = "rgba(0,180,180,0.06)" if theme == "dark" else "rgba(0,120,120,0.05)"
-    border     = "rgba(0,180,180,0.2)"  if theme == "dark" else "rgba(0,120,120,0.2)"
+    accent     = "#E91E8C"       if theme == "dark" else "#C2185B"
+    accent2    = "#FF6B35"       if theme == "dark" else "#E64A19"
+    accent3    = "#9C27B0"       if theme == "dark" else "#7B1FA2"
+    text_color = "#FFFFFF"       if theme == "dark" else "#1A0A2E"
+    subtext    = "#9988BB"       if theme == "dark" else "#6A4080"
+    card_bg    = "rgba(233,30,140,0.06)"  if theme == "dark" else "rgba(194,24,91,0.05)"
+    border     = "rgba(233,30,140,0.2)"   if theme == "dark" else "rgba(194,24,91,0.2)"
+
+    CHART_COLORS = ['#E91E8C', '#FF6B35', '#9C27B0', '#FF9800']
 
     t = lambda key: get_text(key, lang)
 
     # ── Page Banner ──
     st.markdown(f"""
-    <div style='background:{card_bg}; border:1px solid {border};
+    <div style='background:linear-gradient(135deg, rgba(233,30,140,0.08), rgba(156,39,176,0.06));
+                border:1px solid {border};
                 border-radius:16px; padding:22px 28px; margin-bottom:24px;
                 backdrop-filter:blur(12px);'>
         <h1 style='font-family:Syne,sans-serif; font-size:1.8rem; font-weight:800;
-                   color:{text_color}; margin:0;'>
-            &#129302; {t("ai_insights")}
+                   background:linear-gradient(135deg, {accent2}, {accent}, {accent3});
+                   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                   background-clip:text; margin:0;'>
+            🤖 {t("ai_insights")}
         </h1>
         <p style='color:{accent}; font-size:0.78rem; letter-spacing:2px;
                   text-transform:uppercase; margin:4px 0 0 0;'>
@@ -54,7 +61,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
     st.markdown(f"""
     <p style='color:{accent}; font-size:0.75rem; text-transform:uppercase;
               letter-spacing:2px; font-weight:700; margin-bottom:12px;'>
-        &#128161; {t("ai_recommendation")}
+        💡 {t("ai_recommendation")}
     </p>
     """, unsafe_allow_html=True)
 
@@ -67,31 +74,31 @@ def show_ai_insights(df, lang="en", theme="dark"):
 
     recs = [
         {
-            "icon":  "&#128241;",
+            "icon":  "📱",
             "title": f"Best Platform: {best_platform}",
             "desc":  f"Achieves highest average ROI of {best_roi_val:.2f}x — focus budget here",
-            "color": "#00B4B4"
+            "color": accent
         },
         {
-            "icon":  "&#127919;",
+            "icon":  "🎯",
             "title": f"Top Campaign Goal: {best_goal}",
             "desc":  f"This goal consistently delivers above-average ROI across all clients",
             "color": "#51CF66"
         },
         {
-            "icon":  "&#128197;",
+            "icon":  "📅",
             "title": f"Best Month to Launch: Month {best_month}",
             "desc":  f"Campaigns launched in month {best_month} show peak performance",
-            "color": "#7B2FBE"
+            "color": accent3
         },
         {
-            "icon":  "&#128101;",
+            "icon":  "👥",
             "title": f"Top Customer Segment: {best_segment}",
             "desc":  f"Highest conversion rate — prioritize this audience in targeting",
-            "color": "#FF6B6B"
+            "color": accent2
         },
         {
-            "icon":  "&#9888;",
+            "icon":  "⚠️",
             "title": f"Underperforming: {worst_platform}",
             "desc":  f"Consider reducing budget here and reallocating to {best_platform}",
             "color": "#FFB347"
@@ -127,12 +134,11 @@ def show_ai_insights(df, lang="en", theme="dark"):
     # ══════════════════════════════════════
     # SECTION 2 — ROI Trend + Prediction
     # ══════════════════════════════════════
-    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>",
-                unsafe_allow_html=True)
+    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>", unsafe_allow_html=True)
     st.markdown(f"""
     <p style='color:{accent}; font-size:0.75rem; text-transform:uppercase;
               letter-spacing:2px; font-weight:700; margin-bottom:12px;'>
-        &#128302; {t("prediction")}
+        📈 {t("prediction")}
     </p>
     """, unsafe_allow_html=True)
 
@@ -162,7 +168,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
             marker=dict(size=8, color=accent,
                        line=dict(width=2, color='white')),
             fill='tozeroy',
-            fillcolor='rgba(0,180,180,0.08)'
+            fillcolor='rgba(233,30,140,0.08)'
         ))
 
         fig.add_trace(go.Scatter(
@@ -170,18 +176,18 @@ def show_ai_insights(df, lang="en", theme="dark"):
             y=[last_roi]   + pred_rois,
             mode='lines+markers',
             name='Predicted ROI',
-            line=dict(color='#FF6B6B', width=3, dash='dot'),
-            marker=dict(size=10, color='#FF6B6B', symbol='star',
+            line=dict(color=accent2, width=3, dash='dot'),
+            marker=dict(size=10, color=accent2, symbol='star',
                        line=dict(width=2, color='white'))
         ))
 
         fig.add_vrect(
             x0=last_month, x1=last_month + 3,
-            fillcolor="rgba(255,107,107,0.05)",
+            fillcolor=f"rgba(255,107,53,0.05)",
             line_width=0,
             annotation_text="Predicted",
             annotation_position="top left",
-            annotation_font_color="#FF6B6B"
+            annotation_font_color=accent2
         )
 
         fig.update_layout(
@@ -205,30 +211,14 @@ def show_ai_insights(df, lang="en", theme="dark"):
                     border-radius:14px; padding:18px;'>
             <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
                       letter-spacing:1.5px; margin:0 0 14px 0;'>
-                &#128200; Forecast
+                📊 Forecast
             </p>
-            <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>
-                Month {pred_months[0]}
-            </p>
+            {''.join([f"""
+            <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>Month {m}</p>
             <p style='color:{accent}; font-size:1.2rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0 0 12px 0;'>
-                {pred_rois[0]}x
-            </p>
-            <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>
-                Month {pred_months[1]}
-            </p>
-            <p style='color:{accent}; font-size:1.2rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0 0 12px 0;'>
-                {pred_rois[1]}x
-            </p>
-            <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>
-                Month {pred_months[2]}
-            </p>
-            <p style='color:{accent}; font-size:1.2rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0 0 16px 0;'>
-                {pred_rois[2]}x
-            </p>
-            <div style='background:rgba(0,180,180,0.08);
+                      font-family:Syne,sans-serif; margin:0 0 12px 0;'>{r}x</p>
+            """ for m, r in zip(pred_months, pred_rois)])}
+            <div style='background:rgba(233,30,140,0.08);
                         border-radius:8px; padding:10px;'>
                 <p style='color:{accent}; font-size:0.70rem;
                           margin:0; text-align:center;'>
@@ -242,12 +232,11 @@ def show_ai_insights(df, lang="en", theme="dark"):
     # SECTION 3 — Feature Importance
     # ══════════════════════════════════════
     if model_loaded:
-        st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>", unsafe_allow_html=True)
         st.markdown(f"""
         <p style='color:{accent}; font-size:0.75rem; text-transform:uppercase;
                   letter-spacing:2px; font-weight:700; margin-bottom:12px;'>
-            &#128273; Key Success Factors
+            🔑 Key Success Factors
         </p>
         """, unsafe_allow_html=True)
 
@@ -261,14 +250,11 @@ def show_ai_insights(df, lang="en", theme="dark"):
             x='Importance', y='Feature',
             orientation='h',
             color='Importance',
-            color_continuous_scale=[[0,'#003333'],[1,'#00B4B4']],
+            color_continuous_scale=[[0,'#2D0A1E'],[1,'#E91E8C']],
             template=template,
             text='Importance'
         )
-        fig2.update_traces(
-            texttemplate='%{text:.3f}',
-            textposition='outside'
-        )
+        fig2.update_traces(texttemplate='%{text:.3f}', textposition='outside')
         fig2.update_layout(
             plot_bgcolor=bg_color,
             paper_bgcolor=bg_color,
@@ -283,12 +269,11 @@ def show_ai_insights(df, lang="en", theme="dark"):
     # ══════════════════════════════════════
     # SECTION 4 — Platform Deep Dive
     # ══════════════════════════════════════
-    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>",
-                unsafe_allow_html=True)
+    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>", unsafe_allow_html=True)
     st.markdown(f"""
     <p style='color:{accent}; font-size:0.75rem; text-transform:uppercase;
               letter-spacing:2px; font-weight:700; margin-bottom:12px;'>
-        &#128241; Platform Deep Dive
+        📱 Platform Deep Dive
     </p>
     """, unsafe_allow_html=True)
 
@@ -307,7 +292,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
             size='Clicks',
             color='Channel_Used',
             text='Channel_Used',
-            color_discrete_sequence=['#00B4B4','#7B2FBE','#FF6B6B','#51CF66'],
+            color_discrete_sequence=CHART_COLORS,
             template=template,
             title="ROI vs CTR by Platform"
         )
@@ -331,15 +316,12 @@ def show_ai_insights(df, lang="en", theme="dark"):
             goal_conv,
             x='Campaign_Goal', y='Conversion',
             color='ROI',
-            color_continuous_scale=[[0,'#003333'],[1,'#00B4B4']],
+            color_continuous_scale=[[0,'#2D0A1E'],[1,'#E91E8C']],
             template=template,
             text='Conversion',
             title="Conversion Rate by Campaign Goal"
         )
-        fig4.update_traces(
-            texttemplate='%{text:.2f}%',
-            textposition='outside'
-        )
+        fig4.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
         fig4.update_layout(
             plot_bgcolor=bg_color,
             paper_bgcolor=bg_color,
@@ -354,33 +336,33 @@ def show_ai_insights(df, lang="en", theme="dark"):
     # ══════════════════════════════════════
     # SECTION 5 — Summary Stats
     # ══════════════════════════════════════
-    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>",
-                unsafe_allow_html=True)
+    st.markdown(f"<hr style='border-color:{border}; opacity:0.5;'>", unsafe_allow_html=True)
     st.markdown(f"""
     <p style='color:{accent}; font-size:0.75rem; text-transform:uppercase;
               letter-spacing:2px; font-weight:700; margin-bottom:16px;'>
-        &#128202; Overall Performance Summary
+        📊 Overall Performance Summary
     </p>
     """, unsafe_allow_html=True)
 
     stats = [
-        ("&#127970;", "Total Clients",   f"{df['Company'].nunique()}"),
-        ("&#128226;", "Total Campaigns", f"{df.shape[0]:,}"),
-        ("&#128176;", "Avg ROI",         f"{df['ROI'].mean():.2f}x"),
-        ("&#128070;", "Avg CTR",         f"{df['CTR'].mean():.2f}%"),
-        ("&#127919;", "Avg Conversion",  f"{df['Conversion_Rate'].mean():.2%}"),
-        ("&#128184;", "Avg Cost",        f"${df['Acquisition_Cost'].mean():,.0f}"),
+        ("🏢", "Total Clients",   f"{df['Company'].nunique()}",         accent),
+        ("📢", "Total Campaigns", f"{df.shape[0]:,}",                   accent2),
+        ("💰", "Avg ROI",         f"{df['ROI'].mean():.2f}x",           accent),
+        ("👆", "Avg CTR",         f"{df['CTR'].mean():.2f}%",           accent3),
+        ("🎯", "Avg Conversion",  f"{df['Conversion_Rate'].mean():.2%}", accent2),
+        ("💸", "Avg Cost",        f"${df['Acquisition_Cost'].mean():,.0f}", accent3),
     ]
 
     cols = st.columns(6)
-    for col, (icon, label, val) in zip(cols, stats):
+    for col, (icon, label, val, color) in zip(cols, stats):
         with col:
             st.markdown(f"""
             <div style='background:{card_bg}; border:1px solid {border};
+                        border-top:3px solid {color};
                         border-radius:12px; padding:14px; text-align:center;
                         backdrop-filter:blur(8px);'>
                 <p style='font-size:1.4rem; margin:0 0 4px 0;'>{icon}</p>
-                <p style='color:{accent}; font-size:1rem; font-weight:800;
+                <p style='color:{color}; font-size:1rem; font-weight:800;
                           font-family:Syne,sans-serif; margin:0;'>{val}</p>
                 <p style='color:{subtext}; font-size:0.65rem; text-transform:uppercase;
                           letter-spacing:1px; margin:3px 0 0 0;'>{label}</p>
