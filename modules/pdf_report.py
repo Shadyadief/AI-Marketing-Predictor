@@ -3,7 +3,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.units import inch
-from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER
 import io
 from datetime import datetime
 
@@ -18,7 +18,6 @@ def generate_pdf(df, client_name, lang="en"):
     PINK     = colors.HexColor('#E91E8C')
     ORANGE   = colors.HexColor('#FF6B35')
     PURPLE   = colors.HexColor('#9C27B0')
-    DARK_BG  = colors.HexColor('#12062A')
     LIGHT_ROW = colors.HexColor('#FDF0F8')
 
     # ── Title Style ──
@@ -50,6 +49,15 @@ def generate_pdf(df, client_name, lang="en"):
         fontName='Helvetica-Bold'
     )
 
+    rec_style = ParagraphStyle(
+        'Rec',
+        parent=styles['Normal'],
+        fontSize=11,
+        spaceAfter=0,
+        leftIndent=0,
+        textColor=colors.HexColor('#1A0A2E')
+    )
+
     # ── Header ──
     story.append(Paragraph("AI-Marketing-Predictor", title_style))
     story.append(Paragraph(
@@ -58,7 +66,7 @@ def generate_pdf(df, client_name, lang="en"):
     ))
 
     # ── Divider line ──
-    divider_data = [[''] ]
+    divider_data = [['']]
     divider = Table(divider_data, colWidths=[6.5*inch])
     divider.setStyle(TableStyle([
         ('LINEBELOW', (0, 0), (-1, -1), 2, PINK),
@@ -109,7 +117,6 @@ def generate_pdf(df, client_name, lang="en"):
         ('TOPPADDING',    (0, 0), (-1, -1), 9),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 9),
         ('GRID',          (0, 0), (-1, -1), 0.5, colors.HexColor('#E0C0D8')),
-        ('ROUNDEDCORNERS',[4]),
     ]))
     story.append(table)
     story.append(Spacer(1, 0.3*inch))
@@ -125,12 +132,7 @@ def generate_pdf(df, client_name, lang="en"):
     story.append(Paragraph(platform_title, section_style))
     story.append(Spacer(1, 0.1*inch))
 
-    rec_style = ParagraphStyle(
-        'Rec', parent=styles['Normal'],
-        fontSize=11, spaceAfter=10, leftIndent=16,
-        textColor=colors.HexColor('#1A0A2E')
-    )
-
+    # ✅ إصلاح المشكلة: استخدام Paragraph مع تنسيقات مختلفة لكل سطر
     recommendations = [
         (PINK,   f"🏆  Best Platform: {best_platform}  (ROI: {best_roi:.2f}x)"),
         (ORANGE, f"🎯  Best Campaign Goal: {best_goal}"),
@@ -139,11 +141,28 @@ def generate_pdf(df, client_name, lang="en"):
         (ORANGE, f"📈  Next Month ROI Prediction: {df['ROI'].mean() * 1.05:.2f}x  (+5% expected growth)"),
     ]
 
-    # Recommendations as colored table
-    rec_table_data = [[Paragraph(
-        f'<font color="#{c.hexval()[1:]}">●</font>  {text}',
-        rec_style
-    )] for c, text in recommendations]
+    # إنشاء جدول بدون استخدام <font> tag
+    rec_table_data = []
+    for color, text in recommendations:
+        # تحويل اللون من reportlab.lib.colors.Color إلى string سداسي عشري
+        color_hex = color.hexval()
+        if len(color_hex) == 7:
+            color_hex = color_hex[1:]  # إزالة الـ # إذا كان موجوداً
+        
+        # إنشاء نص مع رمز ● ملون
+        formatted_text = f"●  {text}"
+        
+        # إنشاء Paragraph مع اللون المطلوب
+        rec_style_temp = ParagraphStyle(
+            f'Rec_{color_hex}',
+            parent=rec_style,
+            textColor=color,
+            fontSize=11,
+            leftIndent=12,
+            spaceAfter=4
+        )
+        
+        rec_table_data.append([Paragraph(formatted_text, rec_style_temp)])
 
     rec_table = Table(rec_table_data, colWidths=[6.5*inch])
     rec_table.setStyle(TableStyle([
@@ -151,6 +170,7 @@ def generate_pdf(df, client_name, lang="en"):
         ('TOPPADDING',    (0, 0), (-1, -1), 8),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ('LEFTPADDING',   (0, 0), (-1, -1), 12),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 12),
         ('GRID',          (0, 0), (-1, -1), 0.3, colors.HexColor('#E0C0D8')),
     ]))
     story.append(rec_table)
