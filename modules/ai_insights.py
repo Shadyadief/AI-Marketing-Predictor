@@ -210,7 +210,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_info:
-        # بناء HTML بشكل منفصل
+        # بناء HTML بشكل منفصل مع التأكد من عدم وجود أخطاء
         forecast_html = f'''
         <div style="background:{card_bg}; border:1px solid {border};
                     border-radius:14px; padding:18px;">
@@ -238,7 +238,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
         </div>
         '''
         
-        # ✅ إضافة unsafe_allow_html=True
+        # ✅ تأكدي أن هذا السطر موجود بالضبط
         st.markdown(forecast_html, unsafe_allow_html=True)
 
     # ══════════════════════════════════════
