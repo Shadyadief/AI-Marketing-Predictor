@@ -206,18 +206,24 @@ def show_ai_insights(df, lang="en", theme="dark"):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_info:
-        st.markdown(f"""
+        # ✅ تم إصلاح المشكلة هنا - بناء الـ HTML بشكل منفصل
+        forecast_html = f"""
         <div style='background:{card_bg}; border:1px solid {border};
                     border-radius:14px; padding:18px;'>
             <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
                       letter-spacing:1.5px; margin:0 0 14px 0;'>
                 📊 Forecast
             </p>
-            {''.join([f"""
+        """
+        
+        for m, r in zip(pred_months, pred_rois):
+            forecast_html += f"""
             <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>Month {m}</p>
             <p style='color:{accent}; font-size:1.2rem; font-weight:800;
                       font-family:Syne,sans-serif; margin:0 0 12px 0;'>{r}x</p>
-            """ for m, r in zip(pred_months, pred_rois)])}
+            """
+        
+        forecast_html += f"""
             <div style='background:rgba(233,30,140,0.08);
                         border-radius:8px; padding:10px;'>
                 <p style='color:{accent}; font-size:0.70rem;
@@ -226,7 +232,9 @@ def show_ai_insights(df, lang="en", theme="dark"):
                 </p>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        
+        st.markdown(forecast_html, unsafe_allow_html=True)
 
     # ══════════════════════════════════════
     # SECTION 3 — Feature Importance
