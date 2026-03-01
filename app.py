@@ -35,7 +35,7 @@ st.markdown("""
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    background: #00B4B4 !important;
+    background: linear-gradient(135deg, #E91E8C, #9C27B0) !important;
     border-radius: 0 12px 12px 0 !important;
     border: none !important;
     width: 30px !important;
@@ -47,7 +47,7 @@ st.markdown("""
     z-index: 999999 !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 4px 0 20px rgba(0,180,180,0.6) !important;
+    box-shadow: 4px 0 20px rgba(233,30,140,0.6) !important;
     cursor: pointer !important;
 }
 
@@ -83,15 +83,19 @@ theme = st.session_state['theme']
 # ==============================
 if theme == 'dark':
     TEXT       = "#FFFFFF"
-    SUBTEXT    = "#8899AA"
-    BORDER     = "rgba(0,180,180,0.2)"
-    ACCENT     = "#00B4B4"
+    SUBTEXT    = "#9988BB"
+    BORDER     = "rgba(233,30,140,0.2)"
+    ACCENT     = "#E91E8C"
+    ACCENT2    = "#FF6B35"
+    ACCENT3    = "#9C27B0"
     GLASS_CARD = "rgba(255,255,255,0.04)"
 else:
-    TEXT       = "#0A1628"
-    SUBTEXT    = "#4A6080"
-    BORDER     = "rgba(0,120,120,0.25)"
-    ACCENT     = "#006B6B"
+    TEXT       = "#1A0A2E"
+    SUBTEXT    = "#6A4080"
+    BORDER     = "rgba(233,30,140,0.25)"
+    ACCENT     = "#C2185B"
+    ACCENT2    = "#E64A19"
+    ACCENT3    = "#7B1FA2"
     GLASS_CARD = "rgba(255,255,255,0.55)"
 
 # ==============================
@@ -100,26 +104,29 @@ else:
 st.markdown(f"""
 <style>
 .stApp {{
-    background: {"linear-gradient(135deg,#060B14 0%,#0A0F1E 60%,#060B14 100%)"
+    background: {"linear-gradient(135deg,#0D0520 0%,#12062A 60%,#0D0520 100%)"
                  if theme == "dark" else
-                 "linear-gradient(135deg,#EEF2F7 0%,#DDE6F0 100%)"} !important;
+                 "linear-gradient(135deg,#F5EEF8 0%,#EDE0F5 100%)"} !important;
     color: {TEXT} !important;
 }}
 
 .block-container {{
-    background: {"rgba(6,11,20,0.45)"
+    background: {"rgba(18,6,42,0.55)"
                  if theme == "dark" else
-                 "rgba(240,244,248,0.55)"} !important;
+                 "rgba(240,232,248,0.55)"} !important;
 }}
 
 [data-testid="stSidebar"] {{
-    background: {"rgba(4,8,16,0.55)"
+    background: {"rgba(10,3,24,0.75)"
                  if theme == "dark" else
-                 "rgba(220,232,245,0.65)"} !important;
+                 "rgba(220,200,240,0.65)"} !important;
 }}
 
 [data-testid="stMetricValue"] {{
-    color: {ACCENT} !important;
+    background: linear-gradient(135deg, {ACCENT2}, {ACCENT});
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
 }}
 
 [data-testid="stMetricLabel"] {{
@@ -127,11 +134,11 @@ st.markdown(f"""
 }}
 
 [data-testid="collapsedControl"] {{
-    background: {ACCENT} !important;
+    background: linear-gradient(135deg, {ACCENT}, {ACCENT3}) !important;
 }}
 
 .stButton > button {{
-    background: linear-gradient(135deg, {ACCENT} 0%, #007A7A 100%) !important;
+    background: linear-gradient(135deg, {ACCENT} 0%, {ACCENT3} 100%) !important;
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -141,7 +148,7 @@ st.markdown(f"""
 # ==============================
 TRANSLATIONS = {
     "en": {
-        "dashboard_title":      "AI-Marketing-Predictor Intelligence",
+        "dashboard_title":      "AI-Marketing-Predictor",
         "overview":             "Overview",
         "client_view":          "Client View",
         "ai_insights":          "AI Insights",
@@ -173,7 +180,7 @@ TRANSLATIONS = {
         "follow_us":            "Follow Us",
     },
     "ar": {
-        "dashboard_title":      "منصة AI-Marketing-Predictor الذكية",
+        "dashboard_title":      "منصة التنبؤ الذكي للتسويق",
         "overview":             "نظرة عامة",
         "client_view":          "عرض العميل",
         "ai_insights":          "توصيات الذكاء الاصطناعي",
@@ -236,7 +243,10 @@ with st.sidebar:
         st.markdown(f"""
         <div style='text-align:center; padding:16px 0;'>
             <span style='font-family:Syne,sans-serif; font-size:1.3rem;
-                         font-weight:800; color:{ACCENT};'>AI-Marketing</span>
+                         font-weight:800;
+                         background:linear-gradient(135deg,{ACCENT2},{ACCENT});
+                         -webkit-background-clip:text;
+                         -webkit-text-fill-color:transparent;'>AI-Marketing</span>
             <span style='font-family:Syne,sans-serif; font-size:0.9rem; color:{SUBTEXT};
                          display:block; letter-spacing:5px;'>PREDICTOR</span>
         </div>
@@ -296,15 +306,19 @@ with st.sidebar:
                   letter-spacing:2px; margin:0 0 10px 0;'>
             &#128225; {t('live_stats')}
         </p>
-        <p style='color:{ACCENT}; font-size:1.4rem; font-weight:800;
-                  font-family:Syne,sans-serif; margin:0; line-height:1;'>
+        <p style='font-size:1.4rem; font-weight:800; font-family:Syne,sans-serif;
+                  margin:0; line-height:1;
+                  background:linear-gradient(135deg,{ACCENT2},{ACCENT});
+                  -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
             {df.shape[0]:,}
         </p>
         <p style='color:{SUBTEXT}; font-size:0.70rem; margin:2px 0 12px 0;'>
             {t('total_records')}
         </p>
-        <p style='color:{ACCENT}; font-size:1.4rem; font-weight:800;
-                  font-family:Syne,sans-serif; margin:0; line-height:1;'>
+        <p style='font-size:1.4rem; font-weight:800; font-family:Syne,sans-serif;
+                  margin:0; line-height:1;
+                  background:linear-gradient(135deg,{ACCENT},{ACCENT3});
+                  -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
             {df['Company'].nunique()}
         </p>
         <p style='color:{SUBTEXT}; font-size:0.70rem; margin:2px 0 0 0;'>
@@ -316,14 +330,16 @@ with st.sidebar:
     # ── Owner Card ──
     st.markdown(f"""
     <div style='background:{GLASS_CARD}; backdrop-filter:blur(12px);
-                border:1px solid {BORDER}; border-radius:14px;
-                padding:14px; margin-bottom:12px;'>
+                border:1px solid {BORDER}; border-top:2px solid {ACCENT};
+                border-radius:14px; padding:14px; margin-bottom:12px;'>
         <p style='color:{SUBTEXT}; font-size:0.66rem; text-transform:uppercase;
                   letter-spacing:2px; margin:0 0 6px 0;'>
             &#128100; {t('owner')}
         </p>
-        <p style='color:{TEXT}; font-size:0.92rem; font-weight:700;
-                  font-family:Syne,sans-serif; margin:0;'>
+        <p style='font-size:0.92rem; font-weight:700;
+                  font-family:Syne,sans-serif; margin:0;
+                  background:linear-gradient(135deg,{ACCENT2},{ACCENT});
+                  -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
             ENG. Shadya Dief
         </p>
     </div>
@@ -342,15 +358,13 @@ with st.sidebar:
            style='display:flex; align-items:center; gap:10px;
                   text-decoration:none; padding:8px 10px;
                   border-radius:10px; margin-bottom:8px;
-                  background:rgba(255,255,255,0.04);
-                  border:1px solid rgba(255,255,255,0.08);'>
+                  background:rgba(233,30,140,0.06);
+                  border:1px solid rgba(233,30,140,0.2);'>
             <span style='font-size:1.2rem;'>&#128101;</span>
             <div>
                 <p style='margin:0; font-size:0.80rem; font-weight:700;
                           color:{TEXT};'>Shadya Dief</p>
-                <p style='margin:0; font-size:0.68rem; color:{SUBTEXT};'>
-                    LinkedIn
-                </p>
+                <p style='margin:0; font-size:0.68rem; color:{SUBTEXT};'>LinkedIn</p>
             </div>
         </a>
         <a href='https://github.com/Shadyadief/AI-Marketing-Predictor/tree/main'
@@ -358,15 +372,13 @@ with st.sidebar:
            style='display:flex; align-items:center; gap:10px;
                   text-decoration:none; padding:8px 10px;
                   border-radius:10px;
-                  background:rgba(0,180,180,0.07);
-                  border:1px solid rgba(0,180,180,0.22);'>
+                  background:rgba(156,39,176,0.08);
+                  border:1px solid rgba(156,39,176,0.25);'>
             <span style='font-size:1.2rem;'>&#128736;</span>
             <div>
                 <p style='margin:0; font-size:0.80rem; font-weight:700;
-                          color:{ACCENT};'>AI-Marketing-Predictor</p>
-                <p style='margin:0; font-size:0.68rem; color:{SUBTEXT};'>
-                    GitHub
-                </p>
+                          color:{ACCENT3};'>AI-Marketing-Predictor</p>
+                <p style='margin:0; font-size:0.68rem; color:{SUBTEXT};'>GitHub</p>
             </div>
         </a>
     </div>
@@ -376,10 +388,12 @@ with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center; padding:8px 0;'>
         <p style='color:{SUBTEXT}; font-size:0.62rem; margin:0; letter-spacing:1px;'>
-            PROMOTE YOUR DREAMS &#11088;
+            BUILT WITH &#10024; BY SHADYA DIEF
         </p>
-        <p style='color:{ACCENT}; font-size:0.72rem; font-weight:700;
-                  font-family:Syne,sans-serif; margin:3px 0 0 0;'>
+        <p style='font-size:0.72rem; font-weight:700;
+                  font-family:Syne,sans-serif; margin:3px 0 0 0;
+                  background:linear-gradient(135deg,{ACCENT2},{ACCENT},{ACCENT3});
+                  -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
             AI-Marketing-Predictor
         </p>
     </div>
@@ -405,4 +419,4 @@ elif current_page == "client":
 elif current_page == "ai":
     show_ai_insights(active_df, lang, theme)
 elif current_page == "upload":
-    show_data_upload(lang)
+    show_data_upload(lang, theme)
