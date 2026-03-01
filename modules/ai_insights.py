@@ -210,24 +210,35 @@ def show_ai_insights(df, lang="en", theme="dark"):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_info:
-        # بناء HTML بشكل منفصل مع التأكد من عدم وجود أخطاء
-        forecast_html = f'''
+        # ✅ الطريقة المباشرة (زي المشروع التاني الشغال)
+        st.markdown(f"""
         <div style="background:{card_bg}; border:1px solid {border};
                     border-radius:14px; padding:18px;">
             <p style="color:{subtext}; font-size:0.68rem; text-transform:uppercase;
                       letter-spacing:1.5px; margin:0 0 14px 0;">
                 📊 Forecast
             </p>
-        '''
-        
-        for m_display, r in zip(display_months, pred_rois):
-            forecast_html += f'''
-            <p style="color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;">Month {m_display}</p>
+            <p style="color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;">
+                Month {display_months[0]}
+            </p>
             <p style="color:{accent}; font-size:1.2rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0 0 12px 0;">{r}x</p>
-            '''
-        
-        forecast_html += f'''
+                      font-family:Syne,sans-serif; margin:0 0 12px 0;">
+                {pred_rois[0]}x
+            </p>
+            <p style="color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;">
+                Month {display_months[1]}
+            </p>
+            <p style="color:{accent}; font-size:1.2rem; font-weight:800;
+                      font-family:Syne,sans-serif; margin:0 0 12px 0;">
+                {pred_rois[1]}x
+            </p>
+            <p style="color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;">
+                Month {display_months[2]}
+            </p>
+            <p style="color:{accent}; font-size:1.2rem; font-weight:800;
+                      font-family:Syne,sans-serif; margin:0 0 16px 0;">
+                {pred_rois[2]}x
+            </p>
             <div style="background:rgba(233,30,140,0.08);
                         border-radius:8px; padding:10px;">
                 <p style="color:{accent}; font-size:0.70rem;
@@ -236,10 +247,7 @@ def show_ai_insights(df, lang="en", theme="dark"):
                 </p>
             </div>
         </div>
-        '''
-        
-        # ✅ تأكدي أن هذا السطر موجود بالضبط
-        st.markdown(forecast_html, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     # ══════════════════════════════════════
     # SECTION 3 — Feature Importance
