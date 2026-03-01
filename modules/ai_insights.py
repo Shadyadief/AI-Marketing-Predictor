@@ -148,12 +148,16 @@ def show_ai_insights(df, lang="en", theme="dark"):
     last_roi    = float(monthly['ROI'].iloc[-1])
     growth_rate = 0.05
 
+    # حساب التوقعات
     pred_months = [last_month + 1, last_month + 2, last_month + 3]
     pred_rois   = [
         round(last_roi * (1 + growth_rate),      2),
         round(last_roi * (1 + growth_rate) ** 2, 2),
         round(last_roi * (1 + growth_rate) ** 3, 2),
     ]
+    
+    # أرقام الشهور للعرض (1,2,3 بدل 13,14,15)
+    display_months = [1, 2, 3]
 
     col_chart, col_info = st.columns([3, 1])
 
@@ -206,34 +210,35 @@ def show_ai_insights(df, lang="en", theme="dark"):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_info:
-        # ✅ تم إصلاح المشكلة هنا - بناء الـ HTML بشكل منفصل
-        forecast_html = f"""
-        <div style='background:{card_bg}; border:1px solid {border};
-                    border-radius:14px; padding:18px;'>
-            <p style='color:{subtext}; font-size:0.68rem; text-transform:uppercase;
-                      letter-spacing:1.5px; margin:0 0 14px 0;'>
+        # بناء HTML بشكل منفصل
+        forecast_html = f'''
+        <div style="background:{card_bg}; border:1px solid {border};
+                    border-radius:14px; padding:18px;">
+            <p style="color:{subtext}; font-size:0.68rem; text-transform:uppercase;
+                      letter-spacing:1.5px; margin:0 0 14px 0;">
                 📊 Forecast
             </p>
-        """
+        '''
         
-        for m, r in zip(pred_months, pred_rois):
-            forecast_html += f"""
-            <p style='color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;'>Month {m}</p>
-            <p style='color:{accent}; font-size:1.2rem; font-weight:800;
-                      font-family:Syne,sans-serif; margin:0 0 12px 0;'>{r}x</p>
-            """
+        for m_display, r in zip(display_months, pred_rois):
+            forecast_html += f'''
+            <p style="color:{subtext}; font-size:0.70rem; margin:0 0 4px 0;">Month {m_display}</p>
+            <p style="color:{accent}; font-size:1.2rem; font-weight:800;
+                      font-family:Syne,sans-serif; margin:0 0 12px 0;">{r}x</p>
+            '''
         
-        forecast_html += f"""
-            <div style='background:rgba(233,30,140,0.08);
-                        border-radius:8px; padding:10px;'>
-                <p style='color:{accent}; font-size:0.70rem;
-                          margin:0; text-align:center;'>
+        forecast_html += f'''
+            <div style="background:rgba(233,30,140,0.08);
+                        border-radius:8px; padding:10px;">
+                <p style="color:{accent}; font-size:0.70rem;
+                          margin:0; text-align:center;">
                     +5% growth/month
                 </p>
             </div>
         </div>
-        """
+        '''
         
+        # ✅ إضافة unsafe_allow_html=True
         st.markdown(forecast_html, unsafe_allow_html=True)
 
     # ══════════════════════════════════════
